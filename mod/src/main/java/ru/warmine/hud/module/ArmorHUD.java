@@ -1,17 +1,20 @@
 package ru.warmine.hud.module;
 
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.minecraft.client.gui.GuiIngame.itemRenderer;
 
+
 public class ArmorHUD implements HUD {
-
-
 
 
     @Override
@@ -29,28 +32,28 @@ public class ArmorHUD implements HUD {
         }
 
         int x = sr.getScaledWidth() - 18;
-        int y = sr.getScaledHeight() - 5;
+        int y = sr.getScaledHeight() - 18;
 
-        for (int i = 0; i < items.size(); i++) {
-            ItemStack item = items.get(i);
+
+        for (int index = 0; index < items.size(); index++) {
+            ItemStack item = items.get(index);
+
             String text = item.getMaxDamage() > 1 ?
                     (item.getMaxDamage() - item.getItemDamage()) + "/" + item.getMaxDamage() : String.valueOf(item.stackSize);
 
-            minecraft.ingameGUI.drawString(minecraft.fontRenderer, text, x - renderer.getStringWidth(text) - 2, y - (i * 14) + 5, 16777215);
-
-            drawItemStack(minecraft, minecraft.fontRenderer, item, x, y - (i * 14));
+            minecraft.ingameGUI.drawString(minecraft.fontRenderer, text, x - renderer.getStringWidth(text) - 2, y - (index * 14) + 5, 16777215);
+            drawItemStack(minecraft, minecraft.fontRenderer, item, x, y - (index * 14));
         }
+
     }
 
-    private void drawItemStack(Minecraft mc, FontRenderer renderer, ItemStack par1ItemStack, int par2, int par3)
+    private void drawItemStack(Minecraft mc, FontRenderer renderer, ItemStack itemStack, int x, int y)
     {
-        //хз зачем
         itemRenderer.zLevel = 200.0F;
         FontRenderer font = null;
-        if (par1ItemStack != null) font = par1ItemStack.getItem().getFontRenderer(par1ItemStack);
+        if (itemStack != null) font = itemStack.getItem().getFontRenderer(itemStack);
         if (font == null) font = renderer;
-        itemRenderer.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), par1ItemStack, par2, par3);
-
+        itemRenderer.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), itemStack, x, y);
         itemRenderer.zLevel = 0.0F;
     }
 
