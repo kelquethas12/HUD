@@ -5,17 +5,21 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.minecraft.client.renderer.ItemRenderer.renderItemIn2D;
+import static net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting;
 
 
 public class ArmorHUD implements HUD {
@@ -43,40 +47,23 @@ public class ArmorHUD implements HUD {
         int index = 1;
         for (ItemStack item : items) {
 
-            String text = "";
-            if(item.getMaxDamage() > 1) {
-                text = (item.getMaxDamage() - item.getItemDamage()) + "/" + item.getMaxDamage();
-            } else {
-                text = item.stackSize + "";
-            }
+            String text = item.getMaxDamage() > 1 ? (item.getMaxDamage() - item.getItemDamage()) + "/" + item.getMaxDamage() : String.valueOf(item.stackSize);
 
             minecraft.ingameGUI.drawString(minecraft.fontRenderer, text, x - renderer.getStringWidth(text) - 2, y - (index * 14) + 5, 16777215);
-            drawItemStack(minecraft, minecraft.fontRenderer, item, x, y - (index * 14));
+
+            renderStart();
+                drawItemStack(minecraft, minecraft.fontRenderer, item, x, y - (index * 14));
+            renderStop();
+
             index++;
         }
     }
 
     private void drawItemStack(Minecraft mc, FontRenderer renderer, ItemStack par1ItemStack, int par2, int par3)
     {
-        //itemRenderer.zLevel = 200.0F;
-        //FontRenderer font = null;
-        //if (par1ItemStack != null) font = par1ItemStack.getItem().getFontRenderer(par1ItemStack);
-        //if (font == null) font = renderer;
-        //itemRenderer.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), par1ItemStack, par2, par3);
-//
-        //itemRenderer.zLevel = 0.0F;
-
         TextureManager textureManager = mc.getTextureManager();
-
         textureManager.bindTexture(textureManager.getResourceLocation(par1ItemStack.getItemSpriteNumber()));
-
-        int iconSize = 18;
-
-        Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(100, 100, 18 % 8 * iconSize, 198 + 18 / 8 * iconSize, iconSize, iconSize);
-
         RenderItem.getInstance().renderItemAndEffectIntoGUI(mc.fontRenderer, textureManager, par1ItemStack, par2, par3);
-
-
     }
 
     @Override
@@ -87,5 +74,20 @@ public class ArmorHUD implements HUD {
     @Override
     public int startPosY() {
         return 0;
+    }
+
+    @Override
+    public void renderStart() {
+        GL11.glPushMatrix();
+        //GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        //GL11.glEnable(GL11.GL_LIGHTING);
+        //GL11.glDisable(GL11.GL_DEPTH_TEST);
+        enableStandardItemLighting();
+    }
+
+    @Override
+    public void renderStop() {
+        RenderHelper.disableStandardItemLighting();
+        GL11.glPopMatrix();
     }
 }

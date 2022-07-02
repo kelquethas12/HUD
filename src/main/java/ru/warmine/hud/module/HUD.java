@@ -10,4 +10,7 @@ public interface HUD {
 
     int startPosX();
     int startPosY();
+
+    void renderStart();
+    void renderStop();
 }

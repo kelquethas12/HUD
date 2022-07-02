@@ -8,6 +8,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Collection;
 
@@ -36,7 +37,10 @@ public class EffectHUD implements HUD {
 
                     minecraft.getTextureManager().bindTexture(field_147001_a);
 
+                    renderStart();
                     Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(x, y, potionIcon % 8 * iconSize, 198 + potionIcon / 8 * iconSize, iconSize, iconSize);
+                    renderStop();
+
                     String amplifier = String.valueOf(potionEffect.getAmplifier())
                             .replace("0", "I")
                             .replace("1", "II")
@@ -67,5 +71,20 @@ public class EffectHUD implements HUD {
     @Override
     public int startPosY() {
         return 0;
+    }
+
+    @Override
+    public void renderStart() {
+        GL11.glPushMatrix();
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    public void renderStop() {
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glPopAttrib();
+        GL11.glPopMatrix();
     }
 }
